@@ -9,6 +9,8 @@ public class Nova : MonoBehaviour
     private float timer = 0.0f;
     private List<Player> damagePlayer = new List<Player>();
 
+    public SoundManager sound = null;
+
     public int damage;
 
     public void Reset()
@@ -26,6 +28,7 @@ public class Nova : MonoBehaviour
         {
             for (int i = 0; i < damagePlayer.Count; i++)
             {
+                sound.HitSound();
                 damagePlayer[i].damage(damage);
             }
             ObjectPool<Nova>.instance.Recycle(this);

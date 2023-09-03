@@ -20,6 +20,8 @@ public class GameCore : MonoBehaviour
 
     public InputManager input;
 
+    public SoundManager sound;
+
     public Player[] players;
 
     private ObjectPool<Bullet> bulletPool;
@@ -95,6 +97,7 @@ public class GameCore : MonoBehaviour
                     {
                         if(players[i].hp <= 0)
                         {
+                            sound.DieSound();
                             gameState = GameState.Finish;
                             input.inputControl = false;
                             for (int j = 0; j < players.Length; j++)

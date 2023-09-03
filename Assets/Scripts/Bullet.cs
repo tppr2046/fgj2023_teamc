@@ -9,6 +9,8 @@ public class Bullet : MonoBehaviour
 
     private float timer = 0.0f;
 
+    public SoundManager sound = null;
+
     public int damage;
 
     public Vector2 flyDir;
@@ -43,6 +45,7 @@ public class Bullet : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
+            sound.HitSound();
             collision.gameObject.GetComponent<Player>().damage(damage);
         }
         ObjectPool<Bullet>.instance.Recycle(this);

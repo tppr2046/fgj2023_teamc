@@ -33,6 +33,8 @@ public class Player : MonoBehaviour
 
     public InputManager input = null;
 
+    public SoundManager sound = null;
+
     public PlayerId id = PlayerId.player1;
 
     public int hp = 0;
@@ -160,6 +162,7 @@ public class Player : MonoBehaviour
             {
                 if (inMeleePlayer != null)
                 {
+                    sound.HitSound();
                     inMeleePlayer.damage(meleeDamageHp);
                 }
                 meleeDamageCountDownTimer[i].Stop();
@@ -215,6 +218,7 @@ public class Player : MonoBehaviour
             }
         }
 
+        sound.DashSound();
         beforeFlashSite = transform.localPosition;
         flashDir = _dir;
         flashTimer = 0;
@@ -269,9 +273,11 @@ public class Player : MonoBehaviour
             transform.localPosition = beforeFlashSite;
         }
 
+        sound.ShootSound();
         isNeedFlashNextStepCheck = false;
         Bullet b = bulletPool.Spawn(this.transform.position + this.transform.right, Quaternion.identity);
         b.Reset();
+        b.sound = sound;
         b.damage = bulletDamageHp;
         b.flyDir = this.transform.right;
     }
@@ -299,11 +305,13 @@ public class Player : MonoBehaviour
             spellSite = beforeFlashSite;
         }
 
+        sound.SkillSound();
         isNeedFlashNextStepCheck = false;
         isNova = true;
         novaCountDownTimer.Restart();
         Nova b = novaPool.Spawn(spellSite, Quaternion.identity);
         b.Reset();
+        b.sound = sound;
         b.damage = novaDamageHp;
     }
 
