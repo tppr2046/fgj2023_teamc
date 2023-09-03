@@ -24,16 +24,24 @@ public class GameCore : MonoBehaviour
 
     private ObjectPool<Bullet> bulletPool;
 
+    private ObjectPool<Nova> novaPool;
+
     private float timer = 0.0f;
 
     [SerializeField]
     private GameObject bulletPrefab;
+
+    [SerializeField]
+    private GameObject novaPrefab;
 
     // Start is called before the first frame update
     void Start()
     {
         bulletPool = ObjectPool<Bullet>.instance;
         bulletPool.InitPool(bulletPrefab, 50);
+
+        novaPool = ObjectPool<Nova>.instance;
+        novaPool.InitPool(novaPrefab, 50);
 
         timer = 0.0f;
         gameState = GameState.BeforePlay;

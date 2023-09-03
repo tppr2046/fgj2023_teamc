@@ -13,7 +13,7 @@ public class InputManager : MonoBehaviour
     public Action<Vector2> p1FlashAction, p2FlashAction = null;
     public Action p1MeleeAtk, p2MeleeAtk = null;
     public Action p1ProjectionAtk, p2ProjectionAtk = null;
-
+    public Action p1NovaAtk, p2NovaAtk = null;
 
     private Vector2 p1Move = new Vector2();
     private Vector2 p2Move = new Vector2();
@@ -26,7 +26,7 @@ public class InputManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -45,7 +45,6 @@ public class InputManager : MonoBehaviour
         {
             p1MoveAction(p1Move);
         }
-
         p2Move.x = Input.GetAxis("Horizontal2");
         p2Move.y = Input.GetAxis("Vertical2");
         if (p2MoveAction != null)
@@ -57,7 +56,7 @@ public class InputManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.W))
         {
-            if(p1Flash.y == 1 && p1FlashDoubleClickTimer.ElapsedMilliseconds < doubleClickDuration)
+            if (p1Flash.y == 1 && p1FlashDoubleClickTimer.ElapsedMilliseconds < doubleClickDuration)
             {
                 p1FlashAction(p1Flash);
             }
@@ -109,7 +108,7 @@ public class InputManager : MonoBehaviour
         }
         else
         {
-            if(p1FlashDoubleClickTimer.ElapsedMilliseconds > doubleClickDuration)
+            if (p1FlashDoubleClickTimer.ElapsedMilliseconds > doubleClickDuration)
             {
                 p1FlashDoubleClickTimer.Stop();
             }
@@ -193,6 +192,16 @@ public class InputManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Keypad2))
         {
             p2ProjectionAtk();
+        }
+
+        // atk 3
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            p1NovaAtk();
+        }
+        if (Input.GetKeyDown(KeyCode.Keypad3))
+        {
+            p2NovaAtk();
         }
     }
 }

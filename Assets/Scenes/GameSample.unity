@@ -763,6 +763,7 @@ MonoBehaviour:
   - {fileID: 559317441}
   - {fileID: 1998057782}
   bulletPrefab: {fileID: 1276156378828259213, guid: dfc0f2431996eeb42aa4525352c4429a, type: 3}
+  novaPrefab: {fileID: 628694031870520474, guid: 961552463fa7a0c4d977ed084bdb9604, type: 3}
 --- !u!4 &1118313516
 Transform:
   m_ObjectHideFlags: 0

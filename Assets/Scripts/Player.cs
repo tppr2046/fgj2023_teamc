@@ -16,13 +16,19 @@ public class Player : MonoBehaviour
     private static int mpRecover = 1;
     private static float moveSpeed = 5;
     private static float flashSpeed = 30;
+    private static float obsticleSpeedMulti = 3;
+    private static float obsticleMoveCheck = 0.1f;
     private static float flashCD = 5000;
-    private static int meleeMpLose = 5;
     private static float meleeDamageTime = 600;
     private static int meleeDamageMaxStack = 20;
+    private static float novaSpellDuration = 2500;
 
+    private static int meleeMpLose = 5;
+    private static int bulletMpLose = 2;
+    private static int novaMpLose = 10;
     private static int meleeDamageHp = 10;
     private static int bulletDamageHp = 5;
+    private static int novaDamageHp = 30;
 
     public InputManager input = null;
 
@@ -41,11 +47,14 @@ public class Player : MonoBehaviour
 
     private Rigidbody2D rigidbody = null;
     private ObjectPool<Bullet> bulletPool;
+    private ObjectPool<Nova> novaPool;
     private List<Bullet> updateBulletList;
 
     private bool dontLoseMp = false;
 
     private float recoverTimer = 0.0f;
+
+    private bool inObsticle = false;
 
     private bool isFlash = false;
     private bool isNeedFlashNextStepCheck = false;
@@ -60,7 +69,9 @@ public class Player : MonoBehaviour
 
     private Stopwatch[] meleeDamageCountDownTimer = new Stopwatch[meleeDamageMaxStack];
 
+    private Stopwatch novaCountDownTimer = new Stopwatch();
 
+    private bool isNova = false;
 
     // Start is called before the first frame update
     void Start()
@@ -76,6 +87,7 @@ public class Player : MonoBehaviour
         }
 
         bulletPool = ObjectPool<Bullet>.instance;
+        novaPool = ObjectPool<Nova>.instance;
 
         updateBulletList = new List<Bullet>();
 
@@ -85,6 +97,7 @@ public class Player : MonoBehaviour
             input.p1FlashAction = Flash;
             input.p1MeleeAtk = MeleeAtk;
             input.p1ProjectionAtk = ProjecteAtk;
+            input.p1NovaAtk = NovaAtk;
         }
         else
         {
@@ -118,6 +131,15 @@ public class Player : MonoBehaviour
             recoverTimer += Time.deltaTime;
         }
 
+        if (isNova)
+        {
+            if(novaCountDownTimer.ElapsedMilliseconds > novaSpellDuration)
+            {
+                novaCountDownTimer.Stop();
+                isNova = false;
+            }
+        }
+
         // melee atk
         for (int i = 0; i < meleeDamageMaxStack; i++)
         {
@@ -147,19 +169,38 @@ public class Player : MonoBehaviour
 
     private void Move(Vector2 _dir)
     {
-        if (closeInput || isFlash)
+        if (closeInput || isFlash || isNova)
         {
             return;
         }
 
-        rigidbody.MovePosition(rigidbody.position + _dir * moveSpeed * Time.deltaTime);
+        var obsticleSpeedUpMul = 1.0f;
+
+        if(inObsticle &&  Mathf.Abs(_dir.x) > obsticleMoveCheck && Mathf.Abs(_dir.y) > obsticleMoveCheck)
+        {
+            obsticleSpeedUpMul = obsticleSpeedMulti;
+        }
+
+        rigidbody.MovePosition(rigidbody.position + _dir * moveSpeed * Time.deltaTime * obsticleSpeedUpMul);
     }
 
     private void Flash(Vector2 _dir)
     {
-        if (closeInput || isFlash)
+        if (closeInput || isFlash || isNova)
         {
             return;
+        }
+
+        if (flashCountDownTimer.IsRunning)
+        {
+            if(flashCountDownTimer.ElapsedMilliseconds > flashCD)
+            {
+                flashCountDownTimer.Stop();
+            }
+            else
+            {
+                return;
+            }
         }
 
         beforeFlashSite = transform.localPosition;
@@ -170,7 +211,7 @@ public class Player : MonoBehaviour
 
     private void MeleeAtk()
     {
-        if (closeInput || isFlash)
+        if (closeInput || isFlash || isNova)
         {
             return;
         }
@@ -197,18 +238,18 @@ public class Player : MonoBehaviour
 
     private void ProjecteAtk()
     {
-        if (closeInput || isFlash)
+        if (closeInput || isFlash || isNova)
         {
             return;
         }
 
         if (!dontLoseMp)
         {
-            if (mp < meleeMpLose)
+            if (mp < bulletMpLose)
             {
                 return;
             }
-            mp -= meleeMpLose;
+            mp -= bulletMpLose;
         }
 
         if (isNeedFlashNextStepCheck)
@@ -219,9 +260,57 @@ public class Player : MonoBehaviour
         isNeedFlashNextStepCheck = false;
         Bullet b = bulletPool.Spawn(this.transform.position + this.transform.right, Quaternion.identity);
         b.Reset();
+        b.damage = bulletDamageHp;
         b.flyDir = this.transform.right;
     }
-    
+
+    private void NovaAtk()
+    {
+        if (closeInput || isFlash)
+        {
+            return;
+        }
+
+        if (!dontLoseMp)
+        {
+            if (mp < novaMpLose)
+            {
+                return;
+            }
+            mp -= novaMpLose;
+        }
+
+        var spellSite = transform.localPosition;
+
+        if (isNeedFlashNextStepCheck)
+        {
+            spellSite = beforeFlashSite;
+        }
+
+        isNeedFlashNextStepCheck = false;
+        isNova = false;
+        novaCountDownTimer.Restart();
+        Nova b = novaPool.Spawn(spellSite, Quaternion.identity);
+        b.Reset();
+        b.damage = novaDamageHp;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision?.gameObject.tag == "Obsticle")
+        {
+            inObsticle = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision?.gameObject.tag == "Obsticle")
+        {
+            inObsticle = false;
+        }
+    }
+
     public void damage(int _atk)
     {
         hp = hp - _atk < 0 ? 0 : hp - _atk;
