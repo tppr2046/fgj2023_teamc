@@ -33,6 +33,8 @@ public class Player : MonoBehaviour
 
     public InputManager input = null;
 
+    public Animator animator = null;
+
     public SoundManager sound = null;
 
     public PlayerId id = PlayerId.player1;
@@ -246,6 +248,7 @@ public class Player : MonoBehaviour
         {
             if (!meleeDamageCountDownTimer[i].IsRunning)
             {
+                animator.SetTrigger("Melee");
                 meleeDamageCountDownTimer[i].Restart();
                 break;
             }
@@ -273,6 +276,7 @@ public class Player : MonoBehaviour
             transform.localPosition = beforeFlashSite;
         }
 
+        animator.SetTrigger("Shoot");
         sound.ShootSound();
         isNeedFlashNextStepCheck = false;
         Bullet b = bulletPool.Spawn(this.transform.position + this.transform.right, Quaternion.identity);
@@ -304,7 +308,8 @@ public class Player : MonoBehaviour
         {
             spellSite = beforeFlashSite;
         }
-
+        
+        animator.SetTrigger("Nova");
         sound.SkillSound();
         isNeedFlashNextStepCheck = false;
         isNova = true;
