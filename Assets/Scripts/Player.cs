@@ -315,6 +315,12 @@ public class Player : MonoBehaviour
         isNova = true;
         novaCountDownTimer.Restart();
         Nova b = novaPool.Spawn(spellSite, Quaternion.identity);
+        if(id == PlayerId.player2)
+        {
+            b.gameObject.GetComponent<Collider2D>().offset = new Vector2(-4, 0);
+            b.transform.GetChild(0).localPosition = new Vector3(-1.15f, 3.89f, 0);
+        }
+        
         b.Reset();
         b.sound = sound;
         b.damage = novaDamageHp;
