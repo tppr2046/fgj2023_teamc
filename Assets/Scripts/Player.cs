@@ -88,7 +88,7 @@ public class Player : MonoBehaviour
         hp = hpMax;
         mp = mpMax;
 
-        for(int i = 0;i < meleeDamageMaxStack; i++)
+        for (int i = 0; i < meleeDamageMaxStack; i++)
         {
             meleeDamageCountDownTimer[i] = new Stopwatch();
         }
@@ -101,6 +101,7 @@ public class Player : MonoBehaviour
         if (id == PlayerId.player1)
         {
             input.p1MoveAction = Move;
+            input.p1MoveStopAction = MoveStop;
             input.p1FlashAction = Flash;
             input.p1MeleeAtk = MeleeAtk;
             input.p1ProjectionAtk = ProjecteAtk;
@@ -110,6 +111,7 @@ public class Player : MonoBehaviour
         else
         {
             input.p2MoveAction = Move;
+            input.p2MoveStopAction = MoveStop;
             input.p2FlashAction = Flash;
             input.p2MeleeAtk = MeleeAtk;
             input.p2ProjectionAtk = ProjecteAtk;
@@ -130,14 +132,14 @@ public class Player : MonoBehaviour
             return;
         }
 
-        if(dontLoseMpTimer.IsRunning && dontLoseMpTimer.ElapsedMilliseconds > dontLoseMpDuration)
+        if (dontLoseMpTimer.IsRunning && dontLoseMpTimer.ElapsedMilliseconds > dontLoseMpDuration)
         {
             dontLoseMpTimer.Stop();
             dontLoseMp = false;
         }
 
         // mp recover
-        if(recoverTimer > recoverDuration)
+        if (recoverTimer > recoverDuration)
         {
             mp = mp + mpRecover > mpMax ? mpMax : mp + mpRecover;
             recoverTimer = 0;
@@ -149,7 +151,7 @@ public class Player : MonoBehaviour
 
         if (isNova)
         {
-            if(novaCountDownTimer.ElapsedMilliseconds > novaSpellDuration)
+            if (novaCountDownTimer.ElapsedMilliseconds > novaSpellDuration)
             {
                 novaCountDownTimer.Stop();
                 isNova = false;
@@ -159,7 +161,7 @@ public class Player : MonoBehaviour
         // melee atk
         for (int i = 0; i < meleeDamageMaxStack; i++)
         {
-            if (meleeDamageCountDownTimer[i].IsRunning && 
+            if (meleeDamageCountDownTimer[i].IsRunning &&
                 meleeDamageCountDownTimer[i].ElapsedMilliseconds > meleeDamageTime)
             {
                 if (inMeleePlayer != null)
@@ -175,13 +177,23 @@ public class Player : MonoBehaviour
         {
             flashTimer += Time.deltaTime;
             rigidbody.MovePosition(rigidbody.position + flashDir * flashSpeed * Time.deltaTime);
-            if(flashTimer >= flashDuration)
+            if (flashTimer >= flashDuration)
             {
                 isFlash = false;
                 isNeedFlashNextStepCheck = true;
                 flashCountDownTimer.Restart();
             }
         }
+    }
+
+    private void MoveStop()
+    {
+        if (closeInput || isFlash || isNova)
+        {
+            return;
+        }
+
+        animator.SetFloat("speed", 0.0f);
     }
 
     private void Move(Vector2 _dir)
@@ -191,9 +203,11 @@ public class Player : MonoBehaviour
             return;
         }
 
+        animator.SetFloat("speed", 1.0f);
+
         var obsticleSpeedUpMul = 1.0f;
 
-        if(inObsticle &&  Mathf.Abs(_dir.x) > obsticleMoveCheck && Mathf.Abs(_dir.y) > obsticleMoveCheck)
+        if (inObsticle && Mathf.Abs(_dir.x) > obsticleMoveCheck && Mathf.Abs(_dir.y) > obsticleMoveCheck)
         {
             obsticleSpeedUpMul = obsticleSpeedMulti;
         }
@@ -210,7 +224,7 @@ public class Player : MonoBehaviour
 
         if (flashCountDownTimer.IsRunning)
         {
-            if(flashCountDownTimer.ElapsedMilliseconds > flashCD)
+            if (flashCountDownTimer.ElapsedMilliseconds > flashCD)
             {
                 flashCountDownTimer.Stop();
             }
@@ -236,7 +250,7 @@ public class Player : MonoBehaviour
 
         if (!dontLoseMp)
         {
-            if(mp < meleeMpLose)
+            if (mp < meleeMpLose)
             {
                 return;
             }
@@ -308,19 +322,19 @@ public class Player : MonoBehaviour
         {
             spellSite = beforeFlashSite;
         }
-        
+
         animator.SetTrigger("Nova");
         sound.SkillSound();
         isNeedFlashNextStepCheck = false;
         isNova = true;
         novaCountDownTimer.Restart();
         Nova b = novaPool.Spawn(spellSite, Quaternion.identity);
-        if(id == PlayerId.player2)
+        if (id == PlayerId.player2)
         {
             b.gameObject.GetComponent<Collider2D>().offset = new Vector2(-4, 0);
             b.transform.GetChild(0).localPosition = new Vector3(-1.15f, 3.89f, 0);
         }
-        
+
         b.Reset();
         b.sound = sound;
         b.damage = novaDamageHp;
@@ -337,7 +351,7 @@ public class Player : MonoBehaviour
         if (!dontLoseMpTimer.IsRunning)
         {
             dontLoseMpTimer.Restart();
-        }        
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

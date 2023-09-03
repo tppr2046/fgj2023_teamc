@@ -25,6 +25,7 @@ public class InputManager : MonoBehaviour
 
     public bool inputControl = false;
     public Action<Vector2> p1MoveAction, p2MoveAction = null;
+    public Action p1MoveStopAction, p2MoveStopAction = null;
     public Action<Vector2> p1FlashAction, p2FlashAction = null;
     public Action p1MeleeAtk, p2MeleeAtk = null;
     public Action p1ProjectionAtk, p2ProjectionAtk = null;
@@ -136,6 +137,13 @@ public class InputManager : MonoBehaviour
                 p1MoveAction(p1Move);
             }
         }
+        else
+        {
+            if (p1MoveAction != null)
+            {
+                p1MoveStopAction();
+            }
+        }
 
         if (Input.GetKey(KeyCode.UpArrow) || 
             Input.GetKey(KeyCode.DownArrow) || 
@@ -147,6 +155,13 @@ public class InputManager : MonoBehaviour
             if (p2MoveAction != null)
             {
                 p2MoveAction(p2Move);
+            }
+        }
+        else
+        {
+            if (p2MoveAction != null)
+            {
+                p2MoveStopAction();
             }
         }
 
