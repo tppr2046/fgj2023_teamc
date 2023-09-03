@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
+using UnityEngine.SceneManagement;
 
 public class GameCore : MonoBehaviour
 {
@@ -138,6 +139,11 @@ public class GameCore : MonoBehaviour
             gameOver.SetActive(true);
 
             gameOverController.SetWinner(players[0].hp >= players[1].hp ? 0 : 1);
+
+            if (Input.anyKey)
+            {
+                SceneManager.LoadScene(1);
+            }
         }
     }
 }
