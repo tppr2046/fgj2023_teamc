@@ -7,6 +7,21 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
     private static float doubleClickDuration = 500;
+    private static float debugKeyInputDuration = 10000;
+    private static KeyCode[] debugKeyP1Combo = new KeyCode[] {
+        KeyCode.W, KeyCode.S,
+        KeyCode.W, KeyCode.S,
+        KeyCode.A, KeyCode.D,
+        KeyCode.A, KeyCode.D,
+        KeyCode.T, KeyCode.Y,
+        KeyCode.T, KeyCode.Y };
+    private static KeyCode[] debugKeyP2Combo = new KeyCode[] {
+        KeyCode.UpArrow, KeyCode.DownArrow,
+        KeyCode.UpArrow, KeyCode.DownArrow,
+        KeyCode.LeftArrow, KeyCode.RightArrow,
+        KeyCode.LeftArrow, KeyCode.RightArrow,
+        KeyCode.Keypad1, KeyCode.Keypad2,
+        KeyCode.Keypad1, KeyCode.Keypad2 };
 
     public bool inputControl = false;
     public Action<Vector2> p1MoveAction, p2MoveAction = null;
@@ -14,6 +29,7 @@ public class InputManager : MonoBehaviour
     public Action p1MeleeAtk, p2MeleeAtk = null;
     public Action p1ProjectionAtk, p2ProjectionAtk = null;
     public Action p1NovaAtk, p2NovaAtk = null;
+    public Action p1Debug, p2Debug = null;
 
     private Vector2 p1Move = new Vector2();
     private Vector2 p2Move = new Vector2();
@@ -23,12 +39,13 @@ public class InputManager : MonoBehaviour
     private Stopwatch p1FlashDoubleClickTimer = new Stopwatch();
     private Stopwatch p2FlashDoubleClickTimer = new Stopwatch();
 
+    private Stopwatch p1DebugKeyTimer = new Stopwatch();
+    private Stopwatch p2DebugKeyTimer = new Stopwatch();
+
+    private int p1DebugKeyIndex = 0;
+    private int p2DebugKeyIndex = 0;
+
     // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -37,19 +54,100 @@ public class InputManager : MonoBehaviour
             return;
         }
 
+        // Debug
+        if (Input.GetKeyDown(debugKeyP1Combo[p1DebugKeyIndex]))
+        {
+            if(p1DebugKeyTimer.IsRunning)
+            {
+                if(p1DebugKeyTimer.ElapsedMilliseconds < debugKeyInputDuration)
+                {
+                    p1DebugKeyIndex++;
+                    if(p1DebugKeyIndex == debugKeyP1Combo.Length)
+                    {
+                        p1Debug();
+                        p1DebugKeyIndex = 0;
+                        p1DebugKeyTimer.Stop();
+                    }
+                }
+                else
+                {
+                    p1DebugKeyIndex = 0;
+                    p1DebugKeyTimer.Stop();
+                }
+            }
+            else
+            {
+                p1DebugKeyTimer.Restart();
+                p1DebugKeyIndex++;
+            }
+        }
+        else
+        {
+            if (p1DebugKeyTimer.ElapsedMilliseconds > debugKeyInputDuration)
+            {
+                p1DebugKeyIndex = 0;
+                p1DebugKeyTimer.Stop();
+            }
+        }
+
+        if (Input.GetKeyDown(debugKeyP2Combo[p2DebugKeyIndex]))
+        {
+            if (p2DebugKeyTimer.IsRunning)
+            {
+                if (p2DebugKeyTimer.ElapsedMilliseconds < debugKeyInputDuration)
+                {
+                    p2DebugKeyIndex++;
+                    if (p2DebugKeyIndex == debugKeyP2Combo.Length)
+                    {
+                        p2Debug();
+                        p2DebugKeyIndex = 0;
+                        p2DebugKeyTimer.Stop();
+                    }
+                }
+                else
+                {
+                    p2DebugKeyIndex = 0;
+                    p2DebugKeyTimer.Stop();
+                }
+            }
+            else
+            {
+                p2DebugKeyTimer.Restart();
+                p2DebugKeyIndex++;
+            }
+        }
+        else
+        {
+            if (p2DebugKeyTimer.ElapsedMilliseconds > debugKeyInputDuration)
+            {
+                p2DebugKeyIndex = 0;
+                p2DebugKeyTimer.Stop();
+            }
+        }
+
         // Move
 
-        p1Move.x = Input.GetAxis("Horizontal1");
-        p1Move.y = Input.GetAxis("Vertical1");
-        if (p1MoveAction != null)
+        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
         {
-            p1MoveAction(p1Move);
+            p1Move.x = Input.GetAxis("Horizontal1");
+            p1Move.y = Input.GetAxis("Vertical1");
+            if (p1MoveAction != null)
+            {
+                p1MoveAction(p1Move);
+            }
         }
-        p2Move.x = Input.GetAxis("Horizontal2");
-        p2Move.y = Input.GetAxis("Vertical2");
-        if (p2MoveAction != null)
+
+        if (Input.GetKey(KeyCode.UpArrow) || 
+            Input.GetKey(KeyCode.DownArrow) || 
+            Input.GetKey(KeyCode.LeftArrow) || 
+            Input.GetKey(KeyCode.RightArrow))
         {
-            p2MoveAction(p2Move);
+            p2Move.x = Input.GetAxis("Horizontal2");
+            p2Move.y = Input.GetAxis("Vertical2");
+            if (p2MoveAction != null)
+            {
+                p2MoveAction(p2Move);
+            }
         }
 
         // Flash

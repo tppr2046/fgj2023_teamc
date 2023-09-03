@@ -22,6 +22,7 @@ public class Player : MonoBehaviour
     private static float meleeDamageTime = 600;
     private static int meleeDamageMaxStack = 20;
     private static float novaSpellDuration = 2500;
+    private static float dontLoseMpDuration = 10000;
 
     private static int meleeMpLose = 5;
     private static int bulletMpLose = 2;
@@ -71,6 +72,8 @@ public class Player : MonoBehaviour
 
     private Stopwatch novaCountDownTimer = new Stopwatch();
 
+    private Stopwatch dontLoseMpTimer = new Stopwatch();
+
     private bool isNova = false;
 
     // Start is called before the first frame update
@@ -98,6 +101,7 @@ public class Player : MonoBehaviour
             input.p1MeleeAtk = MeleeAtk;
             input.p1ProjectionAtk = ProjecteAtk;
             input.p1NovaAtk = NovaAtk;
+            input.p1Debug = DebugKey;
         }
         else
         {
@@ -105,6 +109,8 @@ public class Player : MonoBehaviour
             input.p2FlashAction = Flash;
             input.p2MeleeAtk = MeleeAtk;
             input.p2ProjectionAtk = ProjecteAtk;
+            input.p2NovaAtk = NovaAtk;
+            input.p2Debug = DebugKey;
         }
 
         closeInput = true;
@@ -118,6 +124,12 @@ public class Player : MonoBehaviour
         if (closeInput)
         {
             return;
+        }
+
+        if(dontLoseMpTimer.IsRunning && dontLoseMpTimer.ElapsedMilliseconds > dontLoseMpDuration)
+        {
+            dontLoseMpTimer.Stop();
+            dontLoseMp = false;
         }
 
         // mp recover
@@ -288,11 +300,25 @@ public class Player : MonoBehaviour
         }
 
         isNeedFlashNextStepCheck = false;
-        isNova = false;
+        isNova = true;
         novaCountDownTimer.Restart();
         Nova b = novaPool.Spawn(spellSite, Quaternion.identity);
         b.Reset();
         b.damage = novaDamageHp;
+    }
+
+    private void DebugKey()
+    {
+        if (closeInput)
+        {
+            return;
+        }
+
+        dontLoseMp = true;
+        if (!dontLoseMpTimer.IsRunning)
+        {
+            dontLoseMpTimer.Restart();
+        }        
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
