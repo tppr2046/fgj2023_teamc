@@ -11,8 +11,8 @@ public class Player : MonoBehaviour
         player2
     }
 
-    private static int hpMax = 100;
-    private static int mpMax = 100;
+    public static int hpMax = 100;
+    public static int mpMax = 100;
     private static int mpRecover = 1;
     private static float moveSpeed = 5;
     private static float flashSpeed = 30;

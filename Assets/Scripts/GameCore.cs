@@ -24,6 +24,18 @@ public class GameCore : MonoBehaviour
 
     public Player[] players;
 
+    [SerializeField]
+    private FGJ_2023_TeamC.BloodBarController hudController;
+
+    [SerializeField]
+    private GameOverController gameOverController;
+
+    [SerializeField]
+    private GameObject hud;
+
+    [SerializeField]
+    private GameObject gameOver;
+
     private ObjectPool<Bullet> bulletPool;
 
     private ObjectPool<Nova> novaPool;
@@ -95,6 +107,17 @@ public class GameCore : MonoBehaviour
                 {
                     for (int i = 0; i < players.Length; i++)
                     {
+                        if(players[i].id == Player.PlayerId.player1)
+                        {
+                            hudController.Player_1_Hit((float)players[i].hp / (float)Player.hpMax);
+                            hudController.Player_1_Magic((float)players[i].mp / (float)Player.mpMax);
+                        }
+                        else
+                        {
+                            hudController.Player_2_Hit((float)players[i].hp / (float)Player.hpMax);
+                            hudController.Player_2_Magic((float)players[i].mp / (float)Player.mpMax);
+                        }
+
                         if(players[i].hp <= 0)
                         {
                             sound.DieSound();
@@ -108,6 +131,13 @@ public class GameCore : MonoBehaviour
                     }
                 }
             }
+        }
+        else if (gameState == GameState.Finish)
+        {
+            hud.SetActive(false);
+            gameOver.SetActive(true);
+
+            gameOverController.SetWinner(players[0].hp >= players[1].hp ? 0 : 1);
         }
     }
 }
