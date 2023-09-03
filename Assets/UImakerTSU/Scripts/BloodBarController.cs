@@ -8,46 +8,34 @@ public class BloodBarController : MonoBehaviour
 {
         //public float barSlice;
         bool GameStart = false;
-        private float timer;
-        float durition;
+ //       private float timer;
+ //       float durition;
         public Image Player_1_Blood_Bar;
         public Image Player_2_Blood_Bar;
         public Image Player_1_Magic_Bar;
         public Image Player_2_Magic_Bar;
-        public void Start()
+
+
+        public void Player_1_Hit(float hitPercent)
         {
-            
-            timer = 0;
-            durition = 1;
+            Player_1_Blood_Bar.fillAmount = hitPercent;
         }
-        private void Update()
+
+        public void Player_2_Hit(float hitPercent)
         {
-
-            if (GameStart)
-            {
-                timer += Time.deltaTime;
-                if (timer > 0)
-                {
-                    Player_1_Blood_Bar.fillAmount = Mathf.Lerp(0.1f, 0, timer / durition);
-                    //Player_2_Blood_Bar.fillAmount = Mathf.Lerp(1, 0, timer / durition);
-                    //Player_1_Magic_Bar.fillAmount = Mathf.Lerp(1, 0, timer / durition);
-                    //Player_2_Magic_Bar.fillAmount = Mathf.Lerp(1, 0, timer / durition);
-
-                    if (timer >= durition)
-                    {
-                        GameStart = false;
-                        timer = 0;
-                    }
-                }
-
-            }
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                GameStart = true;
-            }
-            
+            Player_2_Blood_Bar.fillAmount = hitPercent;
         }
-        
+
+        public void Player_1_Magic(float magicPercent)
+        {
+            Player_1_Magic_Bar.fillAmount = magicPercent;
+        }
+
+        public void Player_2_Magic(float magicPercent)
+        {
+            Player_2_Magic_Bar.fillAmount = magicPercent;
+        }
+
 
     }
 
