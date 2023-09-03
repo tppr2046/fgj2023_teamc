@@ -11,8 +11,8 @@ public class Player : MonoBehaviour
         player2
     }
 
-    private static int hpMax = 100;
-    private static int mpMax = 100;
+    public static int hpMax = 100;
+    public static int mpMax = 100;
     private static int mpRecover = 1;
     private static float moveSpeed = 5;
     private static float flashSpeed = 30;
@@ -24,9 +24,9 @@ public class Player : MonoBehaviour
     private static float novaSpellDuration = 2500;
     private static float dontLoseMpDuration = 10000;
 
-    private static int meleeMpLose = 5;
-    private static int bulletMpLose = 2;
-    private static int novaMpLose = 10;
+    private static int meleeMpLose = 10;
+    private static int bulletMpLose = 5;
+    private static int novaMpLose = 30;
     private static int meleeDamageHp = 10;
     private static int bulletDamageHp = 5;
     private static int novaDamageHp = 30;
