@@ -8,32 +8,32 @@ public class SoundManager : MonoBehaviour
     public PlayMakerFSM fsm;
 
     //擊中音
-    void HitSound()
+    public void HitSound()
     {
         fsm.SendEvent("HITSOUND");
     }
 
     //衝刺
-    void DashSound()
+    public void DashSound()
     {
         fsm.SendEvent("DASHSOUND");
     }
 
     //技能
-    void SkillSound()
+    public void SkillSound()
     {
         fsm.SendEvent("SKILLSOUND");
 
     }
 
     //射擊
-    void ShootSound()
+    public void ShootSound()
     {
         fsm.SendEvent("SHOOTSOUND");
     }
 
     //死亡
-    void DieSound()
+    public void DieSound()
     {
         fsm.SendEvent("DIESOUND");
     }
